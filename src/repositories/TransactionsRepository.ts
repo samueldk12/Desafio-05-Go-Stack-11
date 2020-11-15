@@ -25,6 +25,7 @@ class TransactionsRepository {
      return this.transactions;
 
   }
+  
 
   public getBalance(): Balance {
 
@@ -37,7 +38,7 @@ class TransactionsRepository {
     const val_outcome = this.
                         all().
                         filter( 
-                           transaction => transaction.type == 'income' ).
+                           transaction => transaction.type == 'outcome' ).
                         reduce(
                           ( prevVal, transaction ) => prevVal + transaction.value , 0);
     const val_total = val_income - val_outcome;
@@ -54,6 +55,9 @@ class TransactionsRepository {
 
   public create({ title, value, type } : Request): Transaction {
     const transaction = new Transaction({title, value, type});
+
+    if(type == 'outcome' && this.getBalance().total < value)
+      throw Error("You don't have this value in your balance.");
 
     this.transactions.push(transaction);
 
